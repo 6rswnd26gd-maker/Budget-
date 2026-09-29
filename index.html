@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ReceiptAI">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>ReceiptAI</title>
+<style>
+:root{--bg:#f5f6f8;--surface:#fff;--surface2:#f0f2f5;--ink:#101317;--muted:#707780;--line:#e3e6ea;--accent:#111418;--green:#087443;--red:#b42318;--shadow:0 10px 35px rgba(16,19,23,.07)}
+*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,Arial,sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}
+.app{max-width:760px;margin:auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(100px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;justify-content:space-between;padding:10px 0 18px}
+.brand{display:flex;gap:11px;align-items:center}.logo{width:42px;height:42px;border-radius:13px;background:#101317;color:#fff;display:grid;place-items:center;font-weight:900;letter-spacing:-1px}.brand h1{font-size:22px;line-height:1;margin:0}.brand small{display:block;color:var(--muted);margin-top:4px;font-size:12px}
+.screen{display:none}.screen.active{display:block}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:var(--shadow);margin:12px 0}
+.hero{background:linear-gradient(145deg,#111418,#252a31);color:#fff;border:0}.hero .muted{color:#aeb5bd}.hero .big{font-size:43px;font-weight:850;letter-spacing:-1.8px;margin:4px 0 18px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.stat{background:rgba(255,255,255,.09);padding:13px;border-radius:16px}.stat span{font-size:12px;color:#b8bec6}.stat b{display:block;font-size:18px;margin-top:4px}
+h2{font-size:21px;margin:0 0 6px;letter-spacing:-.4px}h3{font-size:16px;margin:0 0 12px}.muted{color:var(--muted)}.small{font-size:12px}
+.primary{border:0;background:#111418;color:#fff;border-radius:16px;padding:16px 18px;font-weight:800;width:100%;box-shadow:0 8px 18px rgba(17,20,24,.15)}.primary:active{transform:translateY(1px)}
+.secondary{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:14px;padding:12px 14px;font-weight:750}.secondary:active{background:#f4f5f6}
+.row{display:flex;gap:10px;align-items:center}.row>*{flex:1}
+label{display:block;font-size:12px;font-weight:800;margin:14px 0 6px;color:#41474e}
+input,select{width:100%;border:1px solid var(--line);background:#fbfbfc;border-radius:13px;padding:13px;outline:none;color:var(--ink)}input:focus,select:focus{border-color:#9aa1aa;box-shadow:0 0 0 3px rgba(17,20,24,.06)}
+.scanBox{border:2px dashed #d6dae0;background:#fafbfc;border-radius:20px;padding:28px 16px;text-align:center;margin-top:14px}.cameraIcon{font-size:38px;margin-bottom:8px}
+.preview{width:100%;max-height:340px;object-fit:contain;border-radius:18px;margin:15px 0;background:#eee}.hidden{display:none!important}.center{text-align:center}
+.progress{height:8px;background:#e8eaed;border-radius:99px;overflow:hidden;margin:12px 0}.progress i{display:block;width:0;height:100%;background:#111418;transition:width .2s}
+.receipt{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line);gap:10px}.receipt:last-child{border-bottom:0}.receipt strong{display:block;font-size:15px}.receipt .meta{font-size:12px;color:var(--muted);margin-top:4px}.amount{font-weight:850;white-space:nowrap}
+.pill{display:inline-flex;padding:5px 9px;border-radius:99px;background:#f0f2f5;color:#555d66;font-size:11px;font-weight:800}
+.item{display:grid;grid-template-columns:1fr 95px 42px;gap:8px;margin:8px 0}.item button{height:46px}
+.empty{padding:22px 5px;text-align:center;color:var(--muted)}
+.search{position:relative;margin-bottom:6px}.search input{padding-left:42px}.search span{position:absolute;left:14px;top:12px}
+.chartRow{margin:15px 0}.chartTop{display:flex;justify-content:space-between;margin-bottom:7px;font-size:13px;font-weight:750}.bar{height:9px;border-radius:99px;background:#e9ebee;overflow:hidden}.bar i{display:block;height:100%;background:#111418;border-radius:99px}
+nav{position:fixed;z-index:10;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(18px);border-top:1px solid var(--line);padding:9px 12px calc(9px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:5px}
+nav button{border:0;background:transparent;color:#7a8189;border-radius:14px;padding:9px 15px;font-size:12px;font-weight:800}nav button.active{background:#111418;color:#fff}
+.toast{position:fixed;z-index:30;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);opacity:0;background:#111418;color:#fff;padding:12px 16px;border-radius:14px;font-weight:750;transition:.25s;pointer-events:none}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(min-width:600px){.grid{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand"><div class="logo">R</div><div><h1>ReceiptAI</h1><small>Simple spending, automatically organized.</small></div></div>
+</header>
+
+<section id="home" class="screen active">
+  <div class="card hero">
+    <div class="muted">This month</div><div class="big" id="monthTotal">$0.00</div>
+    <div class="grid">
+      <div class="stat"><span>Receipts</span><b id="monthReceipts">0</b></div>
+      <div class="stat"><span>Average</span><b id="monthAvg">$0.00</b></div>
+      <div class="stat"><span>Stores</span><b id="monthStores">0</b></div>
+      <div class="stat"><span>All time</span><b id="allTotal">$0.00</b></div>
+    </div>
+  </div>
+  <button class="primary" id="scanHome">＋ &nbsp; Scan a receipt</button>
+  <div class="card"><h3>Top categories</h3><div id="categoriesHome"></div></div>
+  <div class="card"><h3>Recent receipts</h3><div id="recentHome"></div></div>
+</section>
+
+<section id="scan" class="screen">
+  <div class="card">
+    <h2>Scan receipt</h2><p class="muted">Take a clear photo with the receipt flat and well lit.</p>
+    <input id="camera" type="file" accept="image/*" capture="environment" class="hidden">
+    <input id="gallery" type="file" accept="image/*" class="hidden">
+    <div class="row"><button class="primary" id="cameraBtn">📷 Camera</button><button class="secondary" id="galleryBtn">Photos</button></div>
+    <div id="scanBox" class="scanBox"><div class="cameraIcon">🧾</div><b>Ready to scan</b><div class="small muted" style="margin-top:5px">Your photo stays on this device in this version.</div></div>
+    <img id="preview" class="preview hidden">
+    <div id="progressWrap" class="hidden"><div class="progress"><i id="progressBar"></i></div><div id="progressText" class="small muted center"></div></div>
+    <button id="processBtn" class="primary hidden" style="margin-top:10px">✨ Read receipt</button>
+  </div>
+
+  <div id="editCard" class="card hidden">
+    <h2>Review receipt</h2><p class="muted small">Check the numbers before saving. You can edit anything.</p>
+    <label>Store</label><input id="store">
+    <div class="row"><div><label>Date</label><input id="date" type="date"></div><div><label>Category</label><select id="category"><option>Groceries</option><option>Restaurant</option><option>Gas</option><option>Shopping</option><option>Home</option><option>Auto</option><option>Entertainment</option><option>Other</option></select></div></div>
+    <label>Items</label><div id="items"></div><button class="secondary" id="addItem">＋ Add item</button>
+    <div class="row" style="margin-top:8px"><div><label>Subtotal</label><input id="subtotal" type="number" step=".01"></div><div><label>Tax</label><input id="tax" type="number" step=".01"></div></div>
+    <label>Total</label><input id="total" type="number" step=".01">
+    <button class="primary" id="saveReceipt" style="margin-top:14px">Save receipt</button>
+  </div>
+</section>
+
+<section id="history" class="screen">
+  <div class="card"><h2>Receipts</h2>
+    <div class="search"><span>⌕</span><input id="search" placeholder="Search stores or categories…"></div>
+    <div id="historyList"></div>
+  </div>
+</section>
+
+<section id="stats" class="screen">
+  <div class="card"><h2>Spending breakdown</h2><p class="muted small">All saved receipts</p><div id="statsBody"></div></div>
+</section>
+</div>
+
+<nav>
+<button class="active" data-page="home">Home</button><button data-page="scan">Scan</button><button data-page="history">History</button><button data-page="stats">Stats</button>
+</nav>
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script>
+const KEY='receiptai_v2'; let receipts=JSON.parse(localStorage.getItem(KEY)||'[]'),currentImage='',currentItems=[];
+const $=id=>document.getElementById(id), money=n=>'$'+Number(n||0).toFixed(2);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+const monthKey=d=>String(d||'').slice(0,7);
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2200)}
+function persist(){localStorage.setItem(KEY,JSON.stringify(receipts));renderAll()}
+function row(r,withView=false){return `<div class="receipt"><div><strong>${esc(r.store||'Unknown store')}</strong><div class="meta">${esc(r.date||'')} · <span class="pill">${esc(r.category||'Other')}</span></div></div><div style="text-align:right"><div class="amount">${money(r.total)}</div>${withView?`<button class="secondary small" onclick="viewReceipt('${r.id}')">View</button>`:''}</div></div>`}
+function renderAll(){
+ const mk=new Date().toISOString().slice(0,7), mr=receipts.filter(r=>monthKey(r.date||r.createdAt)===mk), mt=mr.reduce((a,r)=>a+Number(r.total||0),0),at=receipts.reduce((a,r)=>a+Number(r.total||0),0);
+ $('monthTotal').textContent=money(mt);$('monthReceipts').textContent=mr.length;$('monthAvg').textContent=money(mr.length?mt/mr.length:0);$('monthStores').textContent=new Set(mr.map(r=>r.store).filter(Boolean)).size;$('allTotal').textContent=money(at);
+ const cats={};mr.forEach(r=>cats[r.category]=(cats[r.category]||0)+Number(r.total||0));
+ $('categoriesHome').innerHTML=Object.keys(cats).length?Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([k,v])=>`<div class="receipt"><span>${esc(k)}</span><b>${money(v)}</b></div>`).join(''):'<div class="empty">Scan your first receipt to see spending by category.</div>';
+ $('recentHome').innerHTML=receipts.slice().sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5).map(r=>row(r)).join('')||'<div class="empty">No receipts yet.</div>';
+ renderHistory();renderStats();
+}
+function renderHistory(){const q=($('search').value||'').toLowerCase();const arr=receipts.slice().sort((a,b)=>new Date(b.date||b.createdAt)-new Date(a.date||a.createdAt)).filter(r=>(r.store+' '+r.category).toLowerCase().includes(q));$('historyList').innerHTML=arr.map(r=>row(r,true)).join('')||'<div class="empty">No receipts found.</div>'}
+function renderStats(){const cats={};receipts.forEach(r=>cats[r.category]=(cats[r.category]||0)+Number(r.total||0));const max=Math.max(...Object.values(cats),1);$('statsBody').innerHTML=Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="chartRow"><div class="chartTop"><span>${esc(k)}</span><span>${money(v)}</span></div><div class="bar"><i style="width:${v/max*100}%"></i></div></div>`).join('')||'<div class="empty">Nothing to chart yet.</div>'}
+function go(p){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));$(p).classList.add('active');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===p));window.scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.page));$('scanHome').onclick=()=>go('scan');$('cameraBtn').onclick=()=>$('camera').click();$('galleryBtn').onclick=()=>$('gallery').click();$('camera').onchange=e=>pick(e.target.files[0]);$('gallery').onchange=e=>pick(e.target.files[0]);$('search').oninput=renderHistory;
+function pick(file){if(!file)return;const r=new FileReader();r.onload=e=>{currentImage=e.target.result;$('preview').src=currentImage;$('preview').classList.remove('hidden');$('scanBox').classList.add('hidden');$('processBtn').classList.remove('hidden');$('editCard').classList.add('hidden')};r.readAsDataURL(file)}
+function parseReceipt(text){
+ const lines=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);let total=null,tax=0,subtotal=null,store=lines[0]||'Unknown store';for(const l of lines){let m=l.match(/(?:TOTAL|AMOUNT DUE|BALANCE DUE)\s*[:$]?\s*([0-9]+[.,][0-9]{2})/i);if(m)total=parseFloat(m[1].replace(',','.'));m=l.match(/(?:TAX|SALES TAX)\s*[:$]?\s*([0-9]+[.,][0-9]{2})/i);if(m)tax=parseFloat(m[1].replace(',','.'));m=l.match(/(?:SUBTOTAL)\s*[:$]?\s*([0-9]+[.,][0-9]{2})/i);if(m)subtotal=parseFloat(m[1].replace(',','.'))}
+ const items=[];for(const l of lines){if(/TOTAL|TAX|SUBTOTAL|CHANGE|CASH|CREDIT|DEBIT|VISA|MASTERCARD|AMEX|BALANCE|AMOUNT DUE/i.test(l))continue;const m=l.match(/(.+?)\s+\$?([0-9]+[.,][0-9]{2})$/);if(m&&m[1].length>1&&!/\d{3,}/.test(m[1]))items.push({name:m[1].replace(/\s+/g,' ').trim(),price:parseFloat(m[2].replace(',','.'))})}
+ if(subtotal===null)subtotal=items.reduce((a,x)=>a+x.price,0);if(total===null)total=subtotal+tax;return{store,date:new Date().toISOString().slice(0,10),items,subtotal,tax,total}
+}
+$('processBtn').onclick=async()=>{if(!currentImage)return;$('progressWrap').classList.remove('hidden');$('processBtn').disabled=true;try{const result=await Tesseract.recognize(currentImage,'eng',{logger:m=>{if(m.status==='recognizing text'){const p=Math.round((m.progress||0)*100);$('progressBar').style.width=p+'%';$('progressText').textContent='Reading receipt… '+p+'%'}}});const r=parseReceipt(result.data.text);currentItems=r.items;$('store').value=r.store;$('date').value=r.date;$('category').value='Other';$('subtotal').value=r.subtotal.toFixed(2);$('tax').value=r.tax.toFixed(2);$('total').value=r.total.toFixed(2);renderItems();$('editCard').classList.remove('hidden');$('progressText').textContent='Done — check the result below.';$('editCard').scrollIntoView({behavior:'smooth'})}catch(e){$('progressText').textContent='Could not read that photo. Try better lighting and a flatter receipt.'}finally{$('processBtn').disabled=false}};
+function renderItems(){$('items').innerHTML=currentItems.map((it,i)=>`<div class="item"><input value="${esc(it.name)}" data-i="${i}" class="iname"><input type="number" step=".01" value="${Number(it.price).toFixed(2)}" data-i="${i}" class="iprice"><button class="secondary" onclick="delItem(${i})">×</button></div>`).join('');document.querySelectorAll('.iname').forEach(x=>x.oninput=e=>currentItems[e.target.dataset.i].name=e.target.value);document.querySelectorAll('.iprice').forEach(x=>x.oninput=e=>currentItems[e.target.dataset.i].price=Number(e.target.value))}
+window.delItem=i=>{currentItems.splice(i,1);renderItems()};$('addItem').onclick=()=>{currentItems.push({name:'New item',price:0});renderItems()};
+$('saveReceipt').onclick=()=>{const r={id:crypto.randomUUID(),store:$('store').value.trim(),date:$('date').value,category:$('category').value,items:currentItems.map(x=>({name:x.name,price:Number(x.price)||0})),subtotal:Number($('subtotal').value)||0,tax:Number($('tax').value)||0,total:Number($('total').value)||0,createdAt:new Date().toISOString()};receipts.push(r);persist();toast('Receipt saved');go('home')};
+window.viewReceipt=id=>{const r=receipts.find(x=>x.id===id);if(!r)return;const lines=(r.items||[]).map(x=>x.name+' — '+money(x.price)).join('\n');alert(`${r.store||'Unknown store'}\n${r.date||''}\n\n${lines}\n\nSubtotal: ${money(r.subtotal)}\nTax: ${money(r.tax)}\nTOTAL: ${money(r.total)}`)}
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');renderAll();
+</script>
+</body>
+</html>
